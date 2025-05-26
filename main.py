@@ -1,32 +1,43 @@
-import os 
+from function import FileSystem
 
-def menu():
+def main():
+    fs = FileSystem()
+    print("Welcome to the File Manager Simulator!")
+    print("Type commands like: mkdir, ls, cd, pwd, rm, exit")
+
     while True:
-        print("\n===== Desktop File Manager =====")
-        print("1. Create new .txt file")
-        print("2. Read a .txt file")
-        print("3. Delete a .txt file")
-        print("4. Search for a file/folder on Desktop")
-        print("5. Create new folder on Desktop")
-        print("6. Exit")
+        command = input("> ").strip()
+        if not command:
+            continue
 
-        choice = input("Enter your choice (1–6): ")
+        parts = command.split()
+        cmd = parts[0]
+        arg = parts[1] if len(parts) > 1 else None
 
-        if choice == '1':
-            create_txt_file()
-        elif choice == '2':
-            read_txt_file()
-        elif choice == '3':
-            delete_file()
-        elif choice == '4':
-            search_file_or_folder()
-        elif choice == '5':
-            create_folder()
-        elif choice == '6':
-            print("Exiting program.")
+        if cmd == "mkdir":
+            if arg:
+                fs.mkdir(arg)
+            else:
+                print("Usage: mkdir <dirname>")
+        elif cmd == "ls":
+            fs.ls()
+        elif cmd == "cd":
+            if arg:
+                fs.cd(arg)
+            else:
+                print("Usage: cd <dirname>")
+        elif cmd == "pwd":
+            fs.pwd()
+        elif cmd == "rm":
+            if arg:
+                fs.rm(arg)
+            else:
+                print("Usage: rm <dirname>")
+        elif cmd == "exit":
+            print("Goodbye!")
             break
         else:
-            print("Invalid choice. Please enter a number between 1 and 6.")
+            print("Unknown command:", cmd)
 
 if __name__ == "__main__":
-    menu()
+    main()

@@ -1,64 +1,53 @@
+class Node:
+    def __init__(self, name, parent=None, is_dir=True):
+        self.name = name
+        self.is_dir = is_dir
+        self.children = {}  # name -> Node
+        self.parent = parent
 
-def get_desktop_path():
-    return os.path("Desktop")
+class FileSystem:
+    def __init__(self):
+        self.root = Node("root")
+        self.current = self.root
 
-def full_path(name):
-    return os.path.join(get_desktop_path(), name)
-
-def file_exists(name):
-    return os.path.isfile(full_path(name))
-
-def folder_exists(name):
-    return os.path.isdir(full_path(name))
-
-def create_txt_file():
-    while True:
-        name = input("Enter .txt file name (without extension): ")
-        if not name:
-            print("Filename cannot be empty.")
-            continue
-        if file_exists(name):
-            print("File already exists.")
+    def mkdir(self, name):
+        if name in self.current.children:
+            print(f"Directory '{name}' already exists.")
         else:
-            open(full_path(name), "w").close()
-            print(f"File '{name}' created on Desktop.")
-            break
+            self.current.children[name] = Node(name, parent=self.current)
+            print(f"Directory '{name}' created.")
 
-def read_txt_file():
-    name = input("Enter .txt file name to read: ")
-    
-    if file_exists(name):
-        with open(full_path(name), "r") as f:
-            content = f.read()
-            print("\n===== File Contents =====")
-            print(content or "(File is empty)")
-    else:
-        print("File not found.")
+    def ls(self):
+        if not self.current.children:
+            print("(empty)")
+        else:
+            for child in self.current.children.values():
+                print(f"{child.name}/" if child.is_dir else child.name)
 
-def delete_file():
-    name = input("Enter file name to delete (with or without .txt): ")
-    path = full_path(name)
-    if os.path.isfile(path):
-        os.remove(path)
-        print(f"File '{name}' deleted.")
-    else:
-        print("File not found.")
+    def cd(self, name):
+        if name == "..":
+            if self.current.parent:
+                self.current = self.current.parent
+            else:
+                print("Already at root.")
+        elif name in self.current.children and self.current.children[name].is_dir:
+            self.current = self.current.children[name]
+        else:
+            print(f"No such directory: {name}")
 
-def search_file_or_folder():
-    target = input("Enter the name of file or folder to search: ")
-    found = False
-    for root, dirs, files in os.walk(get_desktop_path()):
-        if target in files or target in dirs:
-            print("Found at:", os.path.join(root, target))
-            found = True
-    if not found:
-        print("Not found on Desktop.")
+    def pwd(self):
+        path = []
+        node = self.current
+        while node:
+            path.append(node.name)
+            node = node.parent
+        print("/" + "/".join(reversed(path[:-1])))
 
-def create_folder():
-    name = input("Enter folder name to create: ")
-    path = full_path(name)
-    if os.path.isdir(path):
-        print("Folder already exists.")
-    else:
-        os.makedirs(path)
-        print(f"Folder '{name}' created on Desktop.")
+    def rm(self, name):
+        if name not in self.current.children:
+            print(f"No such directory: {name}")
+        elif not self.current.children[name].is_dir:
+            print(f"{name} is not a directory.")
+        else:
+            del self.current.children[name]
+            print(f"Directory '{name}' removed.")
