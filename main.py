@@ -1,4 +1,10 @@
-import os 
+from function import (
+    create_txt_file,
+    read_txt_file,
+    delete_file,
+    search_file_or_folder,
+    create_folder,
+)
 
 def menu():
     while True:
@@ -10,7 +16,7 @@ def menu():
         print("5. Create new folder on Desktop")
         print("6. Exit")
 
-        choice = input("Enter your choice (1–6): ")
+        choice = input("Enter your choice (1–6): ").strip()
 
         if choice == '1':
             create_txt_file()
