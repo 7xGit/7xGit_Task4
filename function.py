@@ -1,3 +1,4 @@
+import os  
 
 def get_desktop_path():
     return os.path("Desktop")
@@ -62,3 +63,57 @@ def create_folder():
     else:
         os.makedirs(path)
         print(f"Folder '{name}' created on Desktop.")
+
+class Node:
+    def __init__(self, name, parent=None):
+        self.name = name
+        self.parent = parent
+        self.children = {}  # name: Node
+
+    def is_root(self):
+        return self.parent is None
+
+    def path(self):
+        node = self
+        parts = []
+        while node:
+            parts.append(node.name)
+            node = node.parent
+        return "/" + "/".join(reversed(parts[:-1]))  # skip the empty root name
+
+def mkdir(current, dirname):
+    if dirname in current.children:
+        print(f"Directory '{dirname}' already exists.")
+    else:
+        current.children[dirname] = Node(dirname, parent=current)
+        print(f"Directory '{dirname}' created.")
+
+def ls(current):
+    if not current.children:
+        print("(empty)")
+    else:
+        for name in sorted(current.children):
+            print(name)
+
+def cd(current, dirname):
+    if dirname == "..":
+        if current.parent:
+            return current.parent
+        else:
+            print("Already at root directory.")
+            return current
+    elif dirname in current.children:
+        return current.children[dirname]
+    else:
+        print(f"No such directory: {dirname}")
+        return current
+
+def pwd(current):
+    print(current.path() or "/")
+
+def rm(current, dirname):
+    if dirname in current.children:
+        del current.children[dirname]
+        print(f"Directory '{dirname}' deleted.")
+    else:
+        print(f"No such directory: {dirname}")
