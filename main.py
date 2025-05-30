@@ -1,4 +1,6 @@
-import os 
+import os
+
+from function import create_txt_file, read_txt_file, delete_file, search_file_or_folder, create_folder
 
 def menu():
     while True:
